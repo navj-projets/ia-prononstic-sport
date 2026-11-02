@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IA PRONOSTIC SPORT – Analyses et pronostics de duels sportifs</title>
+<meta name="description" content="Compare deux équipes ou joueurs et découvre qui a l’avantage : probabilités, forme, situation du jour. Football, basket, tennis, rugby, compétitions africaines.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E2A3A;--bg:#F2F5F3;--card:#fff;--line:#D5DFDA;--green:#1F7A4D;--blue:#2F6F9F;--gold:#E8A91C;--red:#C8472F;--mut:#5B6F78;--goldt:#5A3F00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#E7EFEC;--bg:#0B1A22;--card:#12262F;--line:#23404C;--green:#3FB27A;--blue:#5A9BCB;--gold:#F2B632;--red:#E5694F;--mut:#93A9B1;--goldt:#1B1200}}
+:root[data-theme="dark"]{--ink:#E7EFEC;--bg:#0B1A22;--card:#12262F;--line:#23404C;--green:#3FB27A;--blue:#5A9BCB;--gold:#F2B632;--red:#E5694F;--mut:#93A9B1;--goldt:#1B1200}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Barlow,system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px 16px 40px}
+h1,h2,h3{font-family:"Barlow Condensed",Impact,sans-serif;margin:0;letter-spacing:.2px}
+h1{font-size:clamp(28px,8.5vw,40px);line-height:1}
+h2{font-size:26px}
+h3{font-size:20px}
+p{margin:0}
+.sub{color:var(--mut);margin:6px 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font:600 15px Barlow,sans-serif;cursor:pointer}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+label{display:block;font-weight:600;font-size:14px;color:var(--mut);margin:10px 0 4px}
+select,input{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:500 16px Barlow,sans-serif}
+select:disabled{opacity:.5}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button.go,a.btn{display:block;width:100%;text-align:center;text-decoration:none;border:0;border-radius:12px;padding:14px;font:700 22px "Barlow Condensed",sans-serif;cursor:pointer;margin-top:14px}
+.go{background:var(--green);color:#fff}
+.pay{background:var(--gold);color:var(--goldt)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.demo{font-size:13px;color:var(--mut);margin:0 0 14px}
+.pf{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.pf b{font:700 28px "Barlow Condensed",sans-serif}
+.bar{display:flex;height:16px;border-radius:8px;overflow:hidden;margin:10px 0;background:var(--line)}
+.bar i{display:block}
+.legend{display:flex;justify-content:space-between;font-weight:600;font-size:15px}
+.pills{display:flex;gap:4px;margin-top:4px}
+.pills span{width:22px;height:22px;border-radius:50%;font:700 12px/22px Barlow,sans-serif;text-align:center;color:#fff}
+.V{background:var(--green)}.N{background:var(--mut)}.D{background:var(--red)}
+.cmp{display:grid;grid-template-columns:34px 1fr 34px;gap:8px;align-items:center;margin:6px 0}
+.cmp i{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--green) var(--w),var(--blue) 0)}
+.cmp b{font-weight:600}
+.cmp b:last-child{text-align:right}
+.cl{font-size:13px;color:var(--mut);text-align:center;margin-top:8px}
+.lock{position:relative}
+.lock .fake{filter:blur(6px);user-select:none;pointer-events:none}
+.lock .ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px;background:color-mix(in srgb,var(--card) 55%,transparent);border-radius:10px}
+.tag{display:inline-block;background:var(--gold);color:var(--goldt);font:700 13px Barlow,sans-serif;border-radius:6px;padding:1px 8px;margin-left:6px;vertical-align:middle}
+.meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden;margin:6px 0}
+.meter i{display:block;height:100%;background:var(--gold)}
+ul{margin:6px 0 0;padding-left:20px}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.plans .card{margin:0}
+.plans ul{font-size:14px}
+.warn{font-size:12.5px;color:var(--mut);margin-top:16px}
+.msg{color:var(--red);font-weight:600}
+ol.steps{margin:14px 0 0;padding-left:22px;font-size:15px}
+.hist div{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<main>
+<h1>IA PRONOSTIC SPORT</h1>
+<p class="sub">Compare deux équipes ou joueurs et vois qui a l’avantage, selon leurs performances et la situation du jour.</p>
+
+<div class="chips" id="sports" role="group" aria-label="Sport"></div>
+
+<section class="card" id="daily" hidden><h2>Matchs à suivre</h2><p class="demo" id="dupd"></p><div id="dl"></div></section>
+
+<section class="card" aria-label="Analyse">
+  <label for="comp">Compétition</label><select id="comp"></select>
+  <div class="two">
+    <div><label for="ta">Équipe 1</label><select id="ta"></select></div>
+    <div><label for="tb">Équipe 2</label><select id="tb"></select></div>
+  </div>
+  <h3 style="margin-top:16px">Situation du jour <span class="tag" id="ptag">Premium</span></h3>
+  <div class="two">
+    <div><label for="home">Lieu du match</label><select id="home"><option value="A">Équipe 1 à domicile</option><option value="B">Équipe 2 à domicile</option><option value="N">Terrain neutre</option></select></div>
+    <div><label for="pnote">&nbsp;</label><p id="pnote" class="demo" style="margin:0"></p></div>
+  </div>
+  <div class="two">
+    <div><label for="absA">Absents clés, éq. 1</label><select id="absA"></select></div>
+    <div><label for="absB">Absents clés, éq. 2</label><select id="absB"></select></div>
+    <div><label for="resA">Jours de repos, éq. 1</label><select id="resA"></select></div>
+    <div><label for="resB">Jours de repos, éq. 2</label><select id="resB"></select></div>
+  </div>
+  <button class="go" id="run">Analyser le duel</button>
+  <p class="cl" id="quota"></p>
+</section>
+
+<div id="res"></div>
+
+<section class="card" id="hist" hidden><h3>Mes dernières analyses</h3><div class="hist" id="histl"></div></section>
+
+<section class="card" id="plans">
+  <h2>Gratuit ou Premium</h2>
+  <div class="plans" style="margin-top:10px">
+    <div class="card"><h3>Gratuit</h3><ul><li>3 duels par jour</li><li>Probabilités de victoire</li><li>Forme et statistiques de base</li></ul></div>
+    <div class="card" style="border-color:var(--gold)"><h3>Premium · 2 500 F</h3><p class="cl" style="text-align:left">Valable 30 jours</p><ul><li>Duels illimités</li><li>Situation du jour : lieu, absents, repos</li><li>Indice de confiance, score probable, explication</li><li>Historique de tes analyses</li></ul></div>
+  </div>
+  <ol class="steps"><li>Paie 2 500 F avec Wave.</li><li>Envoie ta preuve de paiement sur WhatsApp.</li><li>Reçois ton code et active ton Premium ci-dessous.</li></ol>
+  <a class="btn pay" id="wave" href="https://pay.wave.com/m/M_ci_BsVtsF_0PH8q/c/ci/?amount=2500" target="_blank" rel="noopener">Payer 2 500 F avec Wave</a>
+  <label for="code">Déjà payé ? Entre ton code premium</label>
+  <div class="two" style="grid-template-columns:1fr auto"><input id="code" autocomplete="off" placeholder="Code reçu après paiement"><button class="chip on" id="unlock">Activer</button></div>
+  <p class="msg" id="cmsg" role="status"></p>
+</section>
+
+<p class="warn">Données indicatives. IA PRONOSTIC SPORT donne des estimations statistiques, jamais une garantie de résultat. Aucun pronostic n’est sûr. Réservé aux 18 ans et plus : joue de façon responsable.</p>
+</main>
+
+<script>
+// CONFIGURATION : free = duels gratuits par jour ; whatsapp = ton numéro au format international sans + (ex : 225XXXXXXXXXX) pour recevoir les preuves de paiement
+var CFG={free:3,whatsapp:"2250564939858"};
+var CODES={"b77161e8c1770266026d75a7daac414f90ded6f636bbed645d273f206c299cfe":{until:"2026-12-02"},"907f9a1e58ef98ad05720489cb9d30ea6b7c5aebaa95f4ec8acb261e2d2c262d":{until:"2026-12-02"},"0fa5b66b4718576790036ae6b62da9e9ca2d21b64d8c80266805933b726b158f":{until:"2026-12-02"},"9aa1d7cf3a90ead397e3e1c75f568151eefbcdca0de22160f627781631f976b0":{until:"2026-12-02"},"9e9a096a37705c5ccd532730ee5591b747ba608f22758f3697ce061b0e3dec19":{until:"2026-12-02"}};
+var DAILY={updated:"2 novembre 2026",matches:[
+{sport:"Football",comp:"Serie A",time:"19h45",home:"A",ref:"69 % – nul 18 % – 13 %",a:["Atalanta",66,66,"VVNDD","Bilan de la saison"],b:["Parma",57,57,"VNDDD","Bilan de la saison"]},
+{sport:"Football",comp:"Ligue 1",time:"19h45",home:"A",ref:"40 % – nul 30 % – 30 %",a:["FC Lorient",70,70,"VVNND","Bilan de la saison"],b:["Stade Brest",65,65,"VNNDD","Bilan de la saison"]},
+{sport:"Football",comp:"Premier League",time:"20h00",home:"A",ref:"45 % – nul 27 % – 28 %",a:["Newcastle United",68,68,"VVNDD","Bilan de la saison"],b:["Everton",66,66,"VNNND","Bilan de la saison"]},
+{sport:"Football",comp:"Liga",time:"20h00",home:"A",ref:"46 % – nul 29 % – 25 %",a:["Deportivo La Corogne",64,64,"VNNDD","Bilan de la saison"],b:["Osasuna",64,64,"VVNDD","Bilan de la saison"]},
+{sport:"Football",comp:"Premier League",time:"Sam 7 nov, 15h00",home:"A",ref:"84 % – nul 11 % – 5 %",a:["Arsenal",85,85,"VVVVD","Bilan de la saison"],b:["Hull City",66,66,"VNNND","Bilan de la saison"]},
+{sport:"Football",comp:"Premier League",time:"Sam 7 nov, 17h30",home:"A",ref:"21 % – nul 23 % – 56 %",a:["Nottingham Forest",59,59,"VNNDD","Bilan de la saison"],b:["Manchester City",80,80,"VVVVD","Bilan de la saison"]},
+{sport:"Football",comp:"Ligue 1",time:"Sam 7 nov, 19h45",home:"A",ref:"85 % – nul 10 % – 5 %",a:["Paris Saint-Germain",79,79,"VVVND","Bilan de la saison"],b:["Troyes",62,62,"VNDDD","Bilan de la saison"]},
+{sport:"Football",comp:"Liga",time:"Sam 7 nov, 20h00",home:"A",ref:"11 % – nul 15 % – 74 %",a:["Valencia",61,61,"VNDDD","Bilan de la saison"],b:["Real Madrid",82,82,"VVVVD","Bilan de la saison"]},
+{sport:"Football",comp:"Serie A",time:"Dim 8 nov, 11h30",home:"A",ref:"45 % – nul 26 % – 29 %",a:["Napoli",68,68,"VVNDD","Bilan de la saison"],b:["Lazio",86,86,"VVVVN","Bilan de la saison"]},
+{sport:"Football",comp:"Premier League",time:"Dim 8 nov, 14h00",home:"A",ref:"20 % – nul 22 % – 58 %",a:["Crystal Palace",60,60,"VNDDD","Bilan de la saison"],b:["Liverpool",72,72,"VVNND","Bilan de la saison"]},
+{sport:"Football",comp:"Serie A",time:"Dim 8 nov, 17h00",home:"A",ref:"53 % – nul 23 % – 24 %",a:["Inter Milan",83,83,"VVVVN","Bilan de la saison"],b:["Como",80,80,"VVVNN","Bilan de la saison"]},
+{sport:"Football",comp:"Ligue 1",time:"Dim 8 nov, 19h45",home:"A",ref:"46 % – nul 24 % – 30 %",a:["Lens",69,69,"VVNDD","Bilan de la saison"],b:["Marseille",72,72,"VVVDD","Bilan de la saison"]}
+]};
+var LBL={Football:"Football",Basketball:"Basket",Tennis:"Tennis",Rugby:"Rugby"};
+var DRAW={Football:1};
+var D={
+Football:{"Ligue des champions CAF":[["Al Ahly",82,78,"VVVNV"],["Wydad AC",76,74,"VNVVD"],["Mamelodi Sundowns",80,79,"VVNVV"],["ASEC Mimosas",68,66,"VNDVV"],["TP Mazembe",70,65,"NVDVN"],["Espérance de Tunis",74,73,"VVNDV"]],
+"Ligue 1 Côte d’Ivoire":[["ASEC Mimosas",70,68,"VVNVD"],["Africa Sports",63,60,"NDVND"],["SC Gagnoa",58,57,"DNVND"],["Stade d’Abidjan",60,62,"NVNDV"],["SO Armée",57,59,"DNNVD"]],
+"Premier League":[["Manchester City",88,85,"VVVNV"],["Arsenal",85,86,"VVNVV"],["Liverpool",86,80,"VNVVV"],["Chelsea",78,74,"NVDVN"],["Tottenham",77,70,"DVNVD"]],
+"Liga":[["Real Madrid",87,84,"VVVVN"],["FC Barcelone",86,79,"VVNVV"],["Atlético Madrid",78,82,"VNVND"],["Séville",70,70,"NDVDN"]]},
+Basketball:{"NBA":[["Celtics",88,85,"VVVDV"],["Lakers",82,76,"VDVVD"],["Nuggets",85,80,"VVDVV"],["Warriors",83,74,"DVVDV"]],
+"Basketball Africa League":[["Petro de Luanda",74,72,"VVVDV"],["US Monastir",72,70,"VDVVV"],["Cape Town Tigers",66,68,"DVDVD"],["AS Douanes",64,66,"VDDVD"]]},
+Tennis:{"Circuit ATP":[["Carlos Alcaraz",90,86,"VVVDV"],["Jannik Sinner",91,87,"VVVVD"],["Novak Djokovic",88,88,"VVDVV"],["Daniil Medvedev",84,83,"VDVVD"],["Alexander Zverev",83,80,"DVVDV"]]},
+Rugby:{"Top 14":[["Toulouse",85,82,"VVNVV"],["La Rochelle",80,80,"VDVVD"],["Racing 92",76,74,"DVDVV"],["Toulon",78,76,"VVDVD"]],
+"Test-matchs":[["Afrique du Sud",88,90,"VVVDV"],["Nouvelle-Zélande",87,85,"VVDVV"],["France",86,84,"VVVVD"],["Irlande",85,86,"VDVVV"]]}
+};
+var $=function(s){return document.querySelector(s)};
+var ST={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var sport="Football",prem=false;
+function today(){return new Date().toISOString().slice(0,10)}
+function opts(a){return a.map(function(x,i){return '<option value="'+i+'">'+x+'</option>'}).join("")}
+function nums(n,from){var h="";for(var i=from;i<=n;i++)h+='<option value="'+i+'">'+i+'</option>';return h}
+function fillSport(){
+  $("#sports").innerHTML=Object.keys(D).map(function(s){return '<button class="chip'+(s===sport?' on':'')+'" data-s="'+s+'">'+LBL[s]+'</button>'}).join("");
+  $("#comp").innerHTML=opts(Object.keys(D[sport]));fillTeams();
+}
+function fillTeams(){
+  var T=D[sport][Object.keys(D[sport])[+$("#comp").value||0]];
+  var n=T.map(function(t){return t[0]});
+  $("#ta").innerHTML=opts(n);$("#tb").innerHTML=opts(n);$("#tb").value=Math.min(1,n.length-1);
+}
+function lockUI(){
+  ["home","absA","absB","resA","resB"].forEach(function(id){$("#"+id).disabled=!prem});
+  $("#ptag").hidden=prem;
+  $("#pnote").textContent=prem?"Premium actif : ces réglages comptent dans l’analyse.":"Réglages réservés au Premium.";
+  if(sport==="Tennis"){$("#home").value="N";}
+  var u=Number((ST.get("ds_d")||"").split("|")[0]===today()?(ST.get("ds_d").split("|")[1]):0);
+  $("#quota").textContent=prem?"Premium : duels illimités":(Math.max(0,CFG.free-u)+" duel(s) gratuit(s) restant(s) aujourd’hui");
+  $("#plans").hidden=false;
+  $("#hist").hidden=!prem;if(prem)showHist();
+}
+function formScore(f){var s=0;for(var i=0;i<f.length;i++)s+=({V:3,N:1,D:0})[f[i]]||0;return s/15*100}
+function power(t,abs,rest){var p=t[1]*.4+t[2]*.35+formScore(t[3])*.25;p-=abs*2.5;if(rest<3)p-=(3-rest)*1.2;return p}
+function pills(f){return '<div class="pills">'+f.split("").map(function(c){return '<span class="'+c+'">'+c+'</span>'}).join("")+'</div>'}
+function cmp(l,a,b){var w=Math.round(a/(a+b)*100);return '<div class="cmp"><b>'+Math.round(a)+'</b><i style="--w:'+w+'%" role="img" aria-label="'+l+'"></i><b>'+Math.round(b)+'</b></div><p class="cl" style="margin:-2px 0 4px">'+l+'</p>'}
+function run(){
+  var T=D[sport][Object.keys(D[sport])[+$("#comp").value]];
+  var A=T[+$("#ta").value],B=T[+$("#tb").value];
+  var res=$("#res");
+  if(A===B){res.innerHTML='<p class="msg card">Choisis deux équipes différentes.</p>';return}
+  var d=ST.get("ds_d")||"",u=d.split("|")[0]===today()?Number(d.split("|")[1]):0;
+  if(!prem&&u>=CFG.free){res.innerHTML='<div class="card"><h3>Limite gratuite atteinte</h3><p class="sub">Tu as utilisé tes '+CFG.free+' duels du jour. Passe Premium pour des duels illimités et l’analyse complète.</p><a class="btn pay" href="#plans">Voir le Premium</a></div>';return}
+  if(!prem)ST.set("ds_d",today()+"|"+(u+1));
+  var home=prem?$("#home").value:"A";if(sport==="Tennis")home="N";
+  var aA=prem?+$("#absA").value:0,aB=prem?+$("#absB").value:0,rA=prem?+$("#resA").value:4,rB=prem?+$("#resB").value:4;
+  var pa=power(A,aA,rA)+(home==="A"?3:0),pb=power(B,aB,rB)+(home==="B"?3:0),df=pa-pb;
+  var pw=1/(1+Math.exp(-df/6)),dr=DRAW[sport]?Math.max(.07,.27-Math.abs(df)*.012):0;
+  var x=Math.round(pw*(1-dr)*100),z=Math.round(dr*100),y=100-x-z;
+  var fav=df>=0?A[0]:B[0],conf=Math.min(95,Math.round(50+Math.abs(df)*3));
+  var cl=conf<60?"Faible":conf<75?"Moyenne":"Élevée";
+  var h='<section class="card"><h2>'+A[0]+' contre '+B[0]+'</h2><div class="legend"><span style="color:var(--green)">'+x+' %</span>'+(z?'<span style="color:var(--mut)">Nul '+z+' %</span>':'')+'<span style="color:var(--blue)">'+y+' %</span></div>'
+   +'<div class="bar"><i style="width:'+x+'%;background:var(--green)"></i><i style="width:'+z+'%;background:var(--mut)"></i><i style="width:'+y+'%;background:var(--blue)"></i></div>'
+   +'<div class="pf"><div><p>'+(A[4]||"Forme récente")+'</p>'+pills(A[3])+'</div><div style="text-align:right"><p>'+(B[4]||"Forme récente")+'</p>'+pills(B[3])+'</div></div>'
+   +'<div style="margin-top:12px">'+(A[4]?cmp("Niveau (points par match)",A[1],B[1]):cmp("Attaque",A[1],B[1])+cmp("Défense",A[2],B[2]))+cmp("Forme",formScore(A[3]),formScore(B[3]))+'</div></section>';
+  if(prem){
+    var ga=Math.max(0,Math.round((A[1]-B[2])/25+1.3+(home==="A"?.3:0)-aA*.2)),gb=Math.max(0,Math.round((B[1]-A[2])/25+1.1+(home==="B"?.3:0)-aB*.2));
+    var why=[],ad=A[1]-B[1],dd=A[2]-B[2],fd=formScore(A[3])-formScore(B[3]);
+    if(A[4])why.push("Niveau (points par match) : avantage "+(ad>=0?A[0]:B[0])+" ("+Math.abs(ad)+" pts)");
+    else{why.push("Attaque : avantage "+(ad>=0?A[0]:B[0])+" ("+Math.abs(ad)+" pts)");
+    why.push("Défense : avantage "+(dd>=0?A[0]:B[0])+" ("+Math.abs(dd)+" pts)")}
+    why.push("Forme : avantage "+(fd>=0?A[0]:B[0])+" ("+Math.round(Math.abs(fd))+" pts)");
+    if(home!=="N")why.push("Avantage du terrain : "+(home==="A"?A[0]:B[0]));
+    if(aA||aB)why.push("Absents clés : "+A[0]+" "+aA+", "+B[0]+" "+aB);
+    if(rA<3||rB<3)why.push("Fatigue : repos court pour "+(rA<3&&rB<3?"les deux":rA<3?A[0]:B[0]));
+    h+='<section class="card" style="border-color:var(--gold)"><h3>Analyse Premium <span class="tag">Premium</span></h3><p style="margin-top:8px"><b>Favori : '+fav+'</b></p><p class="cl" style="text-align:left">Indice de confiance : '+cl+' ('+conf+' %)</p><div class="meter"><i style="width:'+conf+'%"></i></div>'
+     +(sport==="Football"?'<p style="margin-top:8px">Score probable : <b>'+A[0]+' '+ga+' – '+gb+' '+B[0]+'</b></p>':'')
+     +'<p style="margin-top:8px"><b>Pourquoi ce résultat</b></p><ul>'+why.map(function(w){return '<li>'+w+'</li>'}).join("")+'</ul></section>';
+    var hs=JSON.parse(ST.get("ds_h")||"[]");hs.unshift(A[0]+" – "+B[0]+"|"+fav);ST.set("ds_h",JSON.stringify(hs.slice(0,5)));
+  }else{
+    h+='<section class="card lock"><div class="fake"><h3>Analyse Premium</h3><p><b>Favori : ••••••</b></p><div class="meter"><i style="width:70%"></i></div><p>Score probable : •• – ••</p><ul><li>Attaque : avantage ••••</li><li>Défense : avantage ••••</li><li>Absents clés et fatigue : ••••</li></ul></div><div class="ov"><h3>Analyse complète en Premium</h3><p class="sub" style="margin:4px 0 0">Confiance, score probable, explication et situation du jour.</p><a class="btn pay" style="width:auto;padding:10px 20px;font-size:18px" href="#plans">Débloquer pour 2 500 F</a></div></section>';
+  }
+  res.innerHTML=h;lockUI();res.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
+}
+function showHist(){var hs=JSON.parse(ST.get("ds_h")||"[]");$("#histl").innerHTML=hs.length?hs.map(function(r){var p=r.split("|");return '<div><span>'+p[0]+'</span><b>'+p[1]+'</b></div>'}).join(""):'<p class="sub">Aucune analyse pour l’instant.</p>'}
+$("#sports").addEventListener("click",function(e){var s=e.target.getAttribute("data-s");if(s){sport=s;fillSport();lockUI();$("#res").innerHTML=""}});
+$("#comp").addEventListener("change",fillTeams);
+$("#run").addEventListener("click",run);
+function sha(s){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return ("0"+x.toString(16)).slice(-2)}).join("")})}
+function valid(h){var c=CODES[h];return !!c&&c.until>=today()}
+$("#unlock").addEventListener("click",function(){
+  var m=$("#cmsg");m.style.color="";
+  if(!window.crypto||!crypto.subtle){m.textContent="Ouvre cette page dans Chrome pour activer ton code.";return}
+  sha($("#code").value.replace(/[^A-Za-z0-9]/g,"").toUpperCase()).then(function(h){
+    if(CODES[h]&&CODES[h].until<today()){m.textContent="Ce code a expiré. Renouvelle ton Premium pour 2 500 F.";return}
+    if(valid(h)){prem=true;ST.set("ds_k",h);m.style.color="var(--green)";m.textContent="Premium activé jusqu’au "+CODES[h].until+".";lockUI()}
+    else m.textContent="Code incorrect. Vérifie le code reçu après ton paiement."
+  })
+});
+function renderDaily(){
+  var ms=DAILY.matches;if(!ms.length)return;
+  ms.forEach(function(m){var c=D[m.sport];if(!c)return;var L=c["Matchs du jour"]=c["Matchs du jour"]||[];[m.a,m.b].forEach(function(t){if(!L.some(function(x){return x[0]===t[0]}))L.push(t)})});
+  $("#daily").hidden=false;$("#dupd").textContent="Mis à jour le "+DAILY.updated;
+  $("#dl").innerHTML=ms.map(function(m,i){return '<button class="chip" style="display:block;width:100%;text-align:left;margin-bottom:6px" data-m="'+i+'"><b>'+m.time+'</b> '+m.a[0]+' contre '+m.b[0]+'<br><small>'+m.comp+(m.ref?' – Repère externe : '+m.ref:'')+'</small></button>'}).join("")
+}
+$("#dl").addEventListener("click",function(e){
+  var b=e.target.closest("[data-m]");if(!b)return;
+  var m=DAILY.matches[+b.getAttribute("data-m")];sport=m.sport;fillSport();
+  $("#comp").value=Object.keys(D[sport]).indexOf("Matchs du jour");fillTeams();
+  var L=D[sport]["Matchs du jour"];
+  $("#ta").value=L.findIndex(function(x){return x[0]===m.a[0]});$("#tb").value=L.findIndex(function(x){return x[0]===m.b[0]});
+  $("#home").value=m.home||"A";lockUI();run()
+});
+$("#absA").innerHTML=nums(3,0);$("#absB").innerHTML=nums(3,0);$("#resA").innerHTML=nums(7,1);$("#resB").innerHTML=nums(7,1);$("#resA").value=4;$("#resB").value=4;
+var kh=ST.get("ds_k");if(kh)prem=valid(kh);
+if(CFG.whatsapp){var wa=document.createElement("a");wa.className="btn";wa.style.cssText="background:var(--green);color:#fff;margin-top:8px";wa.target="_blank";wa.rel="noopener";wa.textContent="Envoyer ma preuve de paiement sur WhatsApp";wa.href="https://wa.me/"+CFG.whatsapp+"?text="+encodeURIComponent("Bonjour, j’ai payé 2 500 F pour le Premium IA PRONOSTIC SPORT. Voici ma preuve de paiement.");$("#wave").insertAdjacentElement("afterend",wa)}
+renderDaily();fillSport();lockUI();
+</script>
+</body>
+</html>
