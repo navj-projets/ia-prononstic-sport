@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IA PRONOSTIC SPORT – Analyses et pronostics de duels sportifs</title>
-<meta name="description" content="Compare deux équipes ou joueurs et découvre qui a l’avantage : probabilités, forme, situation du jour. Football, basket, tennis, rugby, compétitions africaines.">
+<meta name="description" content="Compare deux équipes ou joueurs et découvre qui a l’avantage : probabilités, forme, situation du jour. Football, basket, tennis, rugby, handball, volley et compétitions africaines.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
@@ -33,6 +33,7 @@ select:disabled{opacity:.5}
 button.go,a.btn{display:block;width:100%;text-align:center;text-decoration:none;border:0;border-radius:12px;padding:14px;font:700 22px "Barlow Condensed",sans-serif;cursor:pointer;margin-top:14px}
 .go{background:var(--green);color:#fff}
 .pay{background:var(--gold);color:var(--goldt)}
+.share{background:var(--green);color:#fff;font-size:18px!important;padding:10px!important}
 :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .demo{font-size:13px;color:var(--mut);margin:0 0 14px}
 .pf{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -61,7 +62,7 @@ ul{margin:6px 0 0;padding-left:20px}
 .warn{font-size:12.5px;color:var(--mut);margin-top:16px}
 .msg{color:var(--red);font-weight:600}
 ol.steps{margin:14px 0 0;padding-left:22px;font-size:15px}
-.hist div{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-top:1px solid var(--line)}
+.hist div{display:flex;justify-content:space-between;gap:8px;font-size:14px;padding:6px 0;border-top:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -72,6 +73,8 @@ ol.steps{margin:14px 0 0;padding-left:22px;font-size:15px}
 <div class="chips" id="sports" role="group" aria-label="Sport"></div>
 
 <section class="card" id="daily" hidden><h2>Matchs à suivre</h2><p class="demo" id="dupd"></p><div id="dl"></div></section>
+
+<section class="card" id="top" hidden></section>
 
 <section class="card" aria-label="Analyse">
   <label for="comp">Compétition</label><select id="comp"></select>
@@ -102,7 +105,7 @@ ol.steps{margin:14px 0 0;padding-left:22px;font-size:15px}
   <h2>Gratuit ou Premium</h2>
   <div class="plans" style="margin-top:10px">
     <div class="card"><h3>Gratuit</h3><ul><li>3 duels par jour</li><li>Probabilités de victoire</li><li>Forme et statistiques de base</li></ul></div>
-    <div class="card" style="border-color:var(--gold)"><h3>Premium · 2 500 F</h3><p class="cl" style="text-align:left">Valable 30 jours</p><ul><li>Duels illimités</li><li>Situation du jour : lieu, absents, repos</li><li>Indice de confiance, score probable, explication</li><li>Historique de tes analyses</li></ul></div>
+    <div class="card" style="border-color:var(--gold)"><h3>Premium · 2 500 F</h3><p class="cl" style="text-align:left">Valable 30 jours</p><ul><li>Duels illimités</li><li>Situation du jour : lieu, absents, repos</li><li>Indice de confiance, score probable, explication</li><li>Top confiance des matchs à suivre</li><li>Partage WhatsApp et historique</li></ul></div>
   </div>
   <ol class="steps"><li>Paie 2 500 F avec Wave.</li><li>Envoie ta preuve de paiement sur WhatsApp.</li><li>Reçois ton code et active ton Premium ci-dessous.</li></ol>
   <a class="btn pay" id="wave" href="https://pay.wave.com/m/M_ci_BsVtsF_0PH8q/c/ci/?amount=2500" target="_blank" rel="noopener">Payer 2 500 F avec Wave</a>
@@ -111,39 +114,68 @@ ol.steps{margin:14px 0 0;padding-left:22px;font-size:15px}
   <p class="msg" id="cmsg" role="status"></p>
 </section>
 
-<p class="warn">Données indicatives. IA PRONOSTIC SPORT donne des estimations statistiques, jamais une garantie de résultat. Aucun pronostic n’est sûr. Réservé aux 18 ans et plus : joue de façon responsable.</p>
+<p class="warn">Données indicatives : le niveau des équipes est une estimation. IA PRONOSTIC SPORT donne des estimations statistiques, jamais une garantie de résultat. Aucun pronostic n’est sûr. Réservé aux 18 ans et plus : joue de façon responsable.</p>
 </main>
 
 <script>
-// CONFIGURATION : free = duels gratuits par jour ; whatsapp = ton numéro au format international sans + (ex : 225XXXXXXXXXX) pour recevoir les preuves de paiement
+// CONFIGURATION : free = duels gratuits par jour ; whatsapp = ton numéro au format international sans +
 var CFG={free:3,whatsapp:"2250564939858"};
+// CODES premium : empreinte SHA-256 du code + date d'expiration
 var CODES={"b77161e8c1770266026d75a7daac414f90ded6f636bbed645d273f206c299cfe":{until:"2026-12-02"},"907f9a1e58ef98ad05720489cb9d30ea6b7c5aebaa95f4ec8acb261e2d2c262d":{until:"2026-12-02"},"0fa5b66b4718576790036ae6b62da9e9ca2d21b64d8c80266805933b726b158f":{until:"2026-12-02"},"9aa1d7cf3a90ead397e3e1c75f568151eefbcdca0de22160f627781631f976b0":{until:"2026-12-02"},"9e9a096a37705c5ccd532730ee5591b747ba608f22758f3697ce061b0e3dec19":{until:"2026-12-02"}};
-var DAILY={updated:"2 novembre 2026",matches:[
-{sport:"Football",comp:"Serie A",time:"19h45",home:"A",ref:"69 % – nul 18 % – 13 %",a:["Atalanta",66,66,"VVNDD","Bilan de la saison"],b:["Parma",57,57,"VNDDD","Bilan de la saison"]},
-{sport:"Football",comp:"Ligue 1",time:"19h45",home:"A",ref:"40 % – nul 30 % – 30 %",a:["FC Lorient",70,70,"VVNND","Bilan de la saison"],b:["Stade Brest",65,65,"VNNDD","Bilan de la saison"]},
-{sport:"Football",comp:"Premier League",time:"20h00",home:"A",ref:"45 % – nul 27 % – 28 %",a:["Newcastle United",68,68,"VVNDD","Bilan de la saison"],b:["Everton",66,66,"VNNND","Bilan de la saison"]},
-{sport:"Football",comp:"Liga",time:"20h00",home:"A",ref:"46 % – nul 29 % – 25 %",a:["Deportivo La Corogne",64,64,"VNNDD","Bilan de la saison"],b:["Osasuna",64,64,"VVNDD","Bilan de la saison"]},
-{sport:"Football",comp:"Premier League",time:"Sam 7 nov, 15h00",home:"A",ref:"84 % – nul 11 % – 5 %",a:["Arsenal",85,85,"VVVVD","Bilan de la saison"],b:["Hull City",66,66,"VNNND","Bilan de la saison"]},
-{sport:"Football",comp:"Premier League",time:"Sam 7 nov, 17h30",home:"A",ref:"21 % – nul 23 % – 56 %",a:["Nottingham Forest",59,59,"VNNDD","Bilan de la saison"],b:["Manchester City",80,80,"VVVVD","Bilan de la saison"]},
-{sport:"Football",comp:"Ligue 1",time:"Sam 7 nov, 19h45",home:"A",ref:"85 % – nul 10 % – 5 %",a:["Paris Saint-Germain",79,79,"VVVND","Bilan de la saison"],b:["Troyes",62,62,"VNDDD","Bilan de la saison"]},
-{sport:"Football",comp:"Liga",time:"Sam 7 nov, 20h00",home:"A",ref:"11 % – nul 15 % – 74 %",a:["Valencia",61,61,"VNDDD","Bilan de la saison"],b:["Real Madrid",82,82,"VVVVD","Bilan de la saison"]},
-{sport:"Football",comp:"Serie A",time:"Dim 8 nov, 11h30",home:"A",ref:"45 % – nul 26 % – 29 %",a:["Napoli",68,68,"VVNDD","Bilan de la saison"],b:["Lazio",86,86,"VVVVN","Bilan de la saison"]},
-{sport:"Football",comp:"Premier League",time:"Dim 8 nov, 14h00",home:"A",ref:"20 % – nul 22 % – 58 %",a:["Crystal Palace",60,60,"VNDDD","Bilan de la saison"],b:["Liverpool",72,72,"VVNND","Bilan de la saison"]},
-{sport:"Football",comp:"Serie A",time:"Dim 8 nov, 17h00",home:"A",ref:"53 % – nul 23 % – 24 %",a:["Inter Milan",83,83,"VVVVN","Bilan de la saison"],b:["Como",80,80,"VVVNN","Bilan de la saison"]},
-{sport:"Football",comp:"Ligue 1",time:"Dim 8 nov, 19h45",home:"A",ref:"46 % – nul 24 % – 30 %",a:["Lens",69,69,"VVNDD","Bilan de la saison"],b:["Marseille",72,72,"VVVDD","Bilan de la saison"]}
+var S="Bilan de la saison",E="Forme non disponible";
+function G(c,t,r,a,b){return {sport:"Football",comp:c,time:t,home:"A",ref:r,a:a,b:b}}
+var U="Ligue des champions UEFA";
+// MATCHS À SUIVRE : à mettre à jour régulièrement
+var DAILY={updated:"3 novembre 2026",matches:[
+G(U,"Auj. 17h45","44 % – nul 24 % – 32 %",["Galatasaray",72,72,"NNNNN",E],["VfB Stuttgart",70,70,"NNNNN",E]),
+G(U,"Auj. 17h45","27 % – nul 25 % – 48 %",["Shakhtar Donetsk",64,64,"NNNNN",E],["Sporting CP",76,76,"NNNNN",E]),
+G(U,"Auj. 20h00","36 % – nul 24 % – 40 %",["Atlético Madrid",80,80,"NNNNN",E],["Bayern Munich",86,86,"NNNNN",E]),
+G(U,"Auj. 20h00","77 % – nul 13 % – 10 %",["FC Barcelone",84,84,"NNNNN",E],["Aston Villa",72,72,"NNNNN",E]),
+G(U,"Auj. 20h00","26 % – nul 23 % – 52 %",["Feyenoord",66,66,"NNNNN",E],["Inter Milan",83,83,"NNNNN",E]),
+G(U,"Auj. 20h00","43 % – nul 24 % – 33 %",["Manchester United",70,70,"NNNNN",E],["AS Rome",72,72,"NNNNN",E]),
+G(U,"Auj. 20h00","21 % – nul 21 % – 59 %",["Villarreal",70,70,"NNNNN",E],["Paris Saint-Germain",79,79,"NNNNN",E]),
+G(U,"Mer 4 nov, 17h45","10 % – nul 13 % – 77 %",["AEK Athènes",62,62,"NNNNN",E],["Real Madrid",82,82,"NNNNN",E]),
+G("Premier League","Sam 7 nov, 15h00","84 % – nul 11 % – 5 %",["Arsenal",85,85,"VVVVD",S],["Hull City",66,66,"VNNND",S]),
+G("Premier League","Sam 7 nov, 17h30","21 % – nul 23 % – 56 %",["Nottingham Forest",59,59,"VNNDD",S],["Manchester City",80,80,"VVVVD",S]),
+G("Ligue 1","Sam 7 nov, 19h45","85 % – nul 10 % – 5 %",["Paris Saint-Germain",79,79,"VVVND",S],["Troyes",62,62,"VNDDD",S]),
+G("Liga","Sam 7 nov, 20h00","11 % – nul 15 % – 74 %",["Valencia",61,61,"VNDDD",S],["Real Madrid",82,82,"VVVVD",S]),
+G("Serie A","Dim 8 nov, 11h30","45 % – nul 26 % – 29 %",["Napoli",68,68,"VVNDD",S],["Lazio",86,86,"VVVVN",S]),
+G("Premier League","Dim 8 nov, 14h00","20 % – nul 22 % – 58 %",["Crystal Palace",60,60,"VNDDD",S],["Liverpool",72,72,"VVNND",S]),
+G("Serie A","Dim 8 nov, 17h00","53 % – nul 23 % – 24 %",["Inter Milan",83,83,"VVVVN",S],["Como",80,80,"VVVNN",S]),
+G("Ligue 1","Dim 8 nov, 19h45","46 % – nul 24 % – 30 %",["Lens",69,69,"VVNDD",S],["Marseille",72,72,"VVVDD",S])
 ]};
-var LBL={Football:"Football",Basketball:"Basket",Tennis:"Tennis",Rugby:"Rugby"};
+var LBL={Football:"Football",Basketball:"Basket",Tennis:"Tennis",Rugby:"Rugby",Handball:"Handball",Volley:"Volley"};
 var DRAW={Football:1};
+// ÉQUIPES : nom|attaque|défense|forme (V victoire, N nul, D défaite)
+function T(s){return s.split(";").map(function(x){var p=x.split("|");return [p[0],+p[1],+p[2],p[3]]})}
 var D={
-Football:{"Ligue des champions CAF":[["Al Ahly",82,78,"VVVNV"],["Wydad AC",76,74,"VNVVD"],["Mamelodi Sundowns",80,79,"VVNVV"],["ASEC Mimosas",68,66,"VNDVV"],["TP Mazembe",70,65,"NVDVN"],["Espérance de Tunis",74,73,"VVNDV"]],
-"Ligue 1 Côte d’Ivoire":[["ASEC Mimosas",70,68,"VVNVD"],["Africa Sports",63,60,"NDVND"],["SC Gagnoa",58,57,"DNVND"],["Stade d’Abidjan",60,62,"NVNDV"],["SO Armée",57,59,"DNNVD"]],
-"Premier League":[["Manchester City",88,85,"VVVNV"],["Arsenal",85,86,"VVNVV"],["Liverpool",86,80,"VNVVV"],["Chelsea",78,74,"NVDVN"],["Tottenham",77,70,"DVNVD"]],
-"Liga":[["Real Madrid",87,84,"VVVVN"],["FC Barcelone",86,79,"VVNVV"],["Atlético Madrid",78,82,"VNVND"],["Séville",70,70,"NDVDN"]]},
-Basketball:{"NBA":[["Celtics",88,85,"VVVDV"],["Lakers",82,76,"VDVVD"],["Nuggets",85,80,"VVDVV"],["Warriors",83,74,"DVVDV"]],
-"Basketball Africa League":[["Petro de Luanda",74,72,"VVVDV"],["US Monastir",72,70,"VDVVV"],["Cape Town Tigers",66,68,"DVDVD"],["AS Douanes",64,66,"VDDVD"]]},
-Tennis:{"Circuit ATP":[["Carlos Alcaraz",90,86,"VVVDV"],["Jannik Sinner",91,87,"VVVVD"],["Novak Djokovic",88,88,"VVDVV"],["Daniil Medvedev",84,83,"VDVVD"],["Alexander Zverev",83,80,"DVVDV"]]},
-Rugby:{"Top 14":[["Toulouse",85,82,"VVNVV"],["La Rochelle",80,80,"VDVVD"],["Racing 92",76,74,"DVDVV"],["Toulon",78,76,"VVDVD"]],
-"Test-matchs":[["Afrique du Sud",88,90,"VVVDV"],["Nouvelle-Zélande",87,85,"VVDVV"],["France",86,84,"VVVVD"],["Irlande",85,86,"VDVVV"]]}
+Football:{
+"Ligue des champions UEFA":T("Real Madrid|87|84|VVVVN;Manchester City|88|85|VVVNV;Bayern Munich|89|83|VVNVV;Paris Saint-Germain|86|82|VVVNV;FC Barcelone|88|79|VVNVV;Arsenal|85|86|VVNVV;Liverpool|86|80|VNVVV;Inter Milan|84|82|VVNVV;Atlético Madrid|80|80|VNVND;Borussia Dortmund|82|74|NVVDV"),
+"Premier League":T("Manchester City|88|85|VVVNV;Arsenal|85|86|VVNVV;Liverpool|86|80|VNVVV;Chelsea|78|74|NVDVN;Tottenham|77|70|DVNVD;Manchester United|78|72|NDVDN;Newcastle United|78|74|VNDVN;Aston Villa|76|74|VVDNV"),
+"Liga":T("Real Madrid|87|84|VVVVN;FC Barcelone|88|79|VVNVV;Atlético Madrid|80|80|VNVND;Séville|70|70|NDVDN;Real Sociedad|74|72|NVDVN;Athletic Bilbao|75|74|VNVDV;Villarreal|74|68|VNDVV;Valencia|68|66|NDDVN"),
+"Serie A":T("Inter Milan|86|83|VVVNV;Napoli|80|78|VVNDV;AC Milan|79|76|VNVDV;Juventus|78|77|NVVND;Atalanta|80|72|VDVVN;Lazio|76|74|VNVND;AS Rome|75|74|NVDVV"),
+"Bundesliga":T("Bayern Munich|90|82|VVVVN;Bayer Leverkusen|84|78|VVNVD;Borussia Dortmund|82|74|VNVVD;RB Leipzig|80|76|NVVDV;Eintracht Francfort|76|68|VDVNV;VfB Stuttgart|76|72|VNDVN"),
+"Ligue 1 (France)":T("Paris Saint-Germain|88|80|VVVVN;Marseille|78|72|VVNDV;Monaco|78|72|VNVVD;Lille|74|72|NVVDV;Lyon|76|70|VDVNV;Lens|72|70|VNDVN;Nice|70|68|NDVND;Rennes|72|68|DVNVD"),
+"Ligue 1 Côte d’Ivoire":T("ASEC Mimosas|70|68|VVNVD;Africa Sports|63|60|NDVND;Stade d’Abidjan|60|62|NVNDV;SC Gagnoa|58|57|DNVND;SO Armée|57|59|DNNVD;Stella Club d’Adjamé|59|58|NVDNV;Séwé Sport|56|55|DNDVN;Racing Club d’Abidjan|57|56|NNDVD"),
+"Ligue des champions CAF":T("Al Ahly|82|78|VVVNV;Wydad AC|76|74|VNVVD;Mamelodi Sundowns|80|79|VVNVV;Pyramids FC|78|75|VVVNV;Orlando Pirates|75|73|VNVVV;RS Berkane|74|72|VNVVD;Espérance de Tunis|74|73|VVNDV;TP Mazembe|70|65|NVDVN;ASEC Mimosas|68|66|VNDVV"),
+"Coupe de la Confédération CAF":T("Raja Casablanca|76|73|VVNVD;Zamalek|74|72|VNVVD;USM Alger|68|66|NVVND;Al Masry|66|65|NVDNV;Stade Malien|62|60|VNDNV"),
+"CAN – équipes africaines":T("Maroc|82|82|VVVNV;Sénégal|80|79|VVNVV;Côte d’Ivoire|79|75|VNVVD;Nigeria|78|73|VNVDV;Égypte|76|74|VNVVD;Algérie|76|72|VVNVD;Cameroun|74|71|NVDVN;Mali|72|71|NVVND;Ghana|70|68|DNVND;Afrique du Sud|68|70|VDNVN"),
+"Équipes nationales du monde":T("France|90|86|VVVVD;Espagne|90|84|VVVVN;Argentine|89|85|VVVNV;Angleterre|87|84|VVNVV;Brésil|87|80|VNVDV;Portugal|86|82|VVVDV;Allemagne|84|80|VNVVD;Pays-Bas|83|81|VVNDV")},
+Basketball:{
+"NBA":T("Celtics|88|85|VVVDV;Thunder|88|86|VVVVD;Nuggets|85|80|VVDVV;Warriors|83|74|DVVDV;Lakers|82|76|VDVVD;Knicks|82|80|VVDVV;Bucks|82|78|VDVDV;Timberwolves|80|84|VDVVD"),
+"EuroLeague":T("Real Madrid Basket|82|80|VVDVV;FC Barcelone Basket|80|79|VVDVV;Fenerbahçe|80|77|VVDVV;Panathinaikos|79|80|VDVVV;Olympiacos|78|79|VDVVD;AS Monaco|76|74|VDVVD"),
+"Basketball Africa League":T("Petro de Luanda|74|72|VVVDV;US Monastir|72|70|VDVVV;Cape Town Tigers|66|68|DVDVD;AS Douanes|64|66|VDDVD")},
+Tennis:{
+"Circuit ATP":T("Jannik Sinner|91|87|VVVVD;Carlos Alcaraz|90|86|VVVDV;Novak Djokovic|88|88|VVDVV;Daniil Medvedev|84|83|VDVVD;Alexander Zverev|83|80|DVVDV;Taylor Fritz|80|78|VDVVD;Casper Ruud|78|78|VDVDV"),
+"Circuit WTA":T("Aryna Sabalenka|90|86|VVVVD;Iga Swiatek|88|87|VVDVV;Coco Gauff|86|84|VDVVV;Elena Rybakina|85|82|VVDVD;Jessica Pegula|80|80|VDVVD;Madison Keys|80|78|DVVDV")},
+Rugby:{
+"Top 14":T("Toulouse|85|82|VVNVV;La Rochelle|80|80|VDVVD;Racing 92|76|74|DVDVV;Toulon|78|76|VVDVD"),
+"United Rugby Championship":T("Leinster|85|83|VVVDV;Stormers|80|80|VDVVD;Bulls|79|78|VVDVD;Munster|78|79|DVVDV"),
+"Test-matchs":T("Afrique du Sud|88|90|VVVDV;Nouvelle-Zélande|87|85|VVDVV;France|86|84|VVVVD;Irlande|85|86|VDVVV;Angleterre|84|83|VVDVD;Australie|78|76|DVDVV")},
+Handball:{
+"Ligue des champions EHF":T("Paris Handball|85|82|VVVVD;FC Barcelone Handball|87|83|VVVVV;Veszprém|84|80|VVVDV;THW Kiel|83|79|VDVVV;SC Magdebourg|85|82|VVDVV;Aalborg|82|80|VDVVD")},
+Volley:{
+"Équipes nationales":T("Italie|87|83|VVVVD;Pologne|86|82|VVVDV;France|85|82|VVDVV;Brésil|84|81|VDVVV;États-Unis|84|82|VVDVV;Japon|82|78|VVVDD")}
 };
 var $=function(s){return document.querySelector(s)};
 var ST={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
@@ -160,6 +192,16 @@ function fillTeams(){
   var n=T.map(function(t){return t[0]});
   $("#ta").innerHTML=opts(n);$("#tb").innerHTML=opts(n);$("#tb").value=Math.min(1,n.length-1);
 }
+function formScore(f){var s=0;for(var i=0;i<f.length;i++)s+=({V:3,N:1,D:0})[f[i]]||0;return s/15*100}
+function power(t,abs,rest){var p=t[1]*.4+t[2]*.35+formScore(t[3])*.25;p-=abs*2.5;if(rest<3)p-=(3-rest)*1.2;return p}
+function quick(m){var df=power(m.a,0,4)-power(m.b,0,4)+(m.home==="A"?3:m.home==="B"?-3:0);return {m:m,conf:Math.min(95,Math.round(50+Math.abs(df)*3)),fav:df>=0?m.a[0]:m.b[0]}}
+function renderTop(){
+  var el=$("#top");if(!DAILY.matches.length){el.hidden=true;return}
+  el.hidden=false;
+  if(!prem){el.innerHTML='<h3>Top confiance à suivre <span class="tag">Premium</span></h3><p class="sub" style="margin:6px 0 0">Les 3 matchs où l’écart entre les équipes est le plus net. <a href="#plans">Débloquer le Premium</a></p>';return}
+  var q=DAILY.matches.map(quick).sort(function(a,b){return b.conf-a.conf}).slice(0,3);
+  el.innerHTML='<h3>Top confiance à suivre <span class="tag">Premium</span></h3><div class="hist">'+q.map(function(r){return '<div><span>'+r.m.a[0]+' contre '+r.m.b[0]+'</span><b>'+r.fav+' – '+r.conf+' %</b></div>'}).join("")+'</div>';
+}
 function lockUI(){
   ["home","absA","absB","resA","resB"].forEach(function(id){$("#"+id).disabled=!prem});
   $("#ptag").hidden=prem;
@@ -169,9 +211,8 @@ function lockUI(){
   $("#quota").textContent=prem?"Premium : duels illimités":(Math.max(0,CFG.free-u)+" duel(s) gratuit(s) restant(s) aujourd’hui");
   $("#plans").hidden=false;
   $("#hist").hidden=!prem;if(prem)showHist();
+  renderTop();
 }
-function formScore(f){var s=0;for(var i=0;i<f.length;i++)s+=({V:3,N:1,D:0})[f[i]]||0;return s/15*100}
-function power(t,abs,rest){var p=t[1]*.4+t[2]*.35+formScore(t[3])*.25;p-=abs*2.5;if(rest<3)p-=(3-rest)*1.2;return p}
 function pills(f){return '<div class="pills">'+f.split("").map(function(c){return '<span class="'+c+'">'+c+'</span>'}).join("")+'</div>'}
 function cmp(l,a,b){var w=Math.round(a/(a+b)*100);return '<div class="cmp"><b>'+Math.round(a)+'</b><i style="--w:'+w+'%" role="img" aria-label="'+l+'"></i><b>'+Math.round(b)+'</b></div><p class="cl" style="margin:-2px 0 4px">'+l+'</p>'}
 function run(){
@@ -189,26 +230,29 @@ function run(){
   var x=Math.round(pw*(1-dr)*100),z=Math.round(dr*100),y=100-x-z;
   var fav=df>=0?A[0]:B[0],conf=Math.min(95,Math.round(50+Math.abs(df)*3));
   var cl=conf<60?"Faible":conf<75?"Moyenne":"Élevée";
+  var one=!!A[4],lv=A[4]===S?"Niveau (points par match)":"Niveau estimé";
   var h='<section class="card"><h2>'+A[0]+' contre '+B[0]+'</h2><div class="legend"><span style="color:var(--green)">'+x+' %</span>'+(z?'<span style="color:var(--mut)">Nul '+z+' %</span>':'')+'<span style="color:var(--blue)">'+y+' %</span></div>'
    +'<div class="bar"><i style="width:'+x+'%;background:var(--green)"></i><i style="width:'+z+'%;background:var(--mut)"></i><i style="width:'+y+'%;background:var(--blue)"></i></div>'
    +'<div class="pf"><div><p>'+(A[4]||"Forme récente")+'</p>'+pills(A[3])+'</div><div style="text-align:right"><p>'+(B[4]||"Forme récente")+'</p>'+pills(B[3])+'</div></div>'
-   +'<div style="margin-top:12px">'+(A[4]?cmp("Niveau (points par match)",A[1],B[1]):cmp("Attaque",A[1],B[1])+cmp("Défense",A[2],B[2]))+cmp("Forme",formScore(A[3]),formScore(B[3]))+'</div></section>';
+   +'<div style="margin-top:12px">'+(one?cmp(lv,A[1],B[1]):cmp("Attaque",A[1],B[1])+cmp("Défense",A[2],B[2]))+cmp("Forme",formScore(A[3]),formScore(B[3]))+'</div></section>';
   if(prem){
     var ga=Math.max(0,Math.round((A[1]-B[2])/25+1.3+(home==="A"?.3:0)-aA*.2)),gb=Math.max(0,Math.round((B[1]-A[2])/25+1.1+(home==="B"?.3:0)-aB*.2));
     var why=[],ad=A[1]-B[1],dd=A[2]-B[2],fd=formScore(A[3])-formScore(B[3]);
-    if(A[4])why.push("Niveau (points par match) : avantage "+(ad>=0?A[0]:B[0])+" ("+Math.abs(ad)+" pts)");
+    if(one)why.push(lv+" : avantage "+(ad>=0?A[0]:B[0])+" ("+Math.abs(ad)+" pts)");
     else{why.push("Attaque : avantage "+(ad>=0?A[0]:B[0])+" ("+Math.abs(ad)+" pts)");
     why.push("Défense : avantage "+(dd>=0?A[0]:B[0])+" ("+Math.abs(dd)+" pts)")}
     why.push("Forme : avantage "+(fd>=0?A[0]:B[0])+" ("+Math.round(Math.abs(fd))+" pts)");
     if(home!=="N")why.push("Avantage du terrain : "+(home==="A"?A[0]:B[0]));
     if(aA||aB)why.push("Absents clés : "+A[0]+" "+aA+", "+B[0]+" "+aB);
     if(rA<3||rB<3)why.push("Fatigue : repos court pour "+(rA<3&&rB<3?"les deux":rA<3?A[0]:B[0]));
+    var sh="IA PRONOSTIC SPORT : "+A[0]+" contre "+B[0]+" – favori : "+fav+" (confiance "+conf+" %). Estimation statistique, aucune garantie.";
     h+='<section class="card" style="border-color:var(--gold)"><h3>Analyse Premium <span class="tag">Premium</span></h3><p style="margin-top:8px"><b>Favori : '+fav+'</b></p><p class="cl" style="text-align:left">Indice de confiance : '+cl+' ('+conf+' %)</p><div class="meter"><i style="width:'+conf+'%"></i></div>'
      +(sport==="Football"?'<p style="margin-top:8px">Score probable : <b>'+A[0]+' '+ga+' – '+gb+' '+B[0]+'</b></p>':'')
-     +'<p style="margin-top:8px"><b>Pourquoi ce résultat</b></p><ul>'+why.map(function(w){return '<li>'+w+'</li>'}).join("")+'</ul></section>';
-    var hs=JSON.parse(ST.get("ds_h")||"[]");hs.unshift(A[0]+" – "+B[0]+"|"+fav);ST.set("ds_h",JSON.stringify(hs.slice(0,5)));
+     +'<p style="margin-top:8px"><b>Pourquoi ce résultat</b></p><ul>'+why.map(function(w){return '<li>'+w+'</li>'}).join("")+'</ul>'
+     +'<a class="btn share" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(sh)+'">Partager sur WhatsApp</a></section>';
+    var hs=JSON.parse(ST.get("ds_h")||"[]");hs.unshift(A[0]+" – "+B[0]+"|"+fav);ST.set("ds_h",JSON.stringify(hs.slice(0,10)));
   }else{
-    h+='<section class="card lock"><div class="fake"><h3>Analyse Premium</h3><p><b>Favori : ••••••</b></p><div class="meter"><i style="width:70%"></i></div><p>Score probable : •• – ••</p><ul><li>Attaque : avantage ••••</li><li>Défense : avantage ••••</li><li>Absents clés et fatigue : ••••</li></ul></div><div class="ov"><h3>Analyse complète en Premium</h3><p class="sub" style="margin:4px 0 0">Confiance, score probable, explication et situation du jour.</p><a class="btn pay" style="width:auto;padding:10px 20px;font-size:18px" href="#plans">Débloquer pour 2 500 F</a></div></section>';
+    h+='<section class="card lock"><div class="fake"><h3>Analyse Premium</h3><p><b>Favori : ••••••</b></p><div class="meter"><i style="width:70%"></i></div><p>Score probable : •• – ••</p><ul><li>Niveau : avantage ••••</li><li>Forme : avantage ••••</li><li>Absents clés et fatigue : ••••</li></ul></div><div class="ov"><h3>Analyse complète en Premium</h3><p class="sub" style="margin:4px 0 0">Confiance, score probable, explication et situation du jour.</p><a class="btn pay" style="width:auto;padding:10px 20px;font-size:18px" href="#plans">Débloquer pour 2 500 F</a></div></section>';
   }
   res.innerHTML=h;lockUI();res.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
 }
@@ -229,7 +273,7 @@ $("#unlock").addEventListener("click",function(){
 });
 function renderDaily(){
   var ms=DAILY.matches;if(!ms.length)return;
-  ms.forEach(function(m){var c=D[m.sport];if(!c)return;var L=c["Matchs du jour"]=c["Matchs du jour"]||[];[m.a,m.b].forEach(function(t){if(!L.some(function(x){return x[0]===t[0]}))L.push(t)})});
+  ms.slice().sort(function(p,q){return (p.a[4]===S?0:1)-(q.a[4]===S?0:1)}).forEach(function(m){var c=D[m.sport];if(!c)return;var L=c["Matchs du jour"]=c["Matchs du jour"]||[];[m.a,m.b].forEach(function(t){if(!L.some(function(x){return x[0]===t[0]}))L.push(t)})});
   $("#daily").hidden=false;$("#dupd").textContent="Mis à jour le "+DAILY.updated;
   $("#dl").innerHTML=ms.map(function(m,i){return '<button class="chip" style="display:block;width:100%;text-align:left;margin-bottom:6px" data-m="'+i+'"><b>'+m.time+'</b> '+m.a[0]+' contre '+m.b[0]+'<br><small>'+m.comp+(m.ref?' – Repère externe : '+m.ref:'')+'</small></button>'}).join("")
 }
